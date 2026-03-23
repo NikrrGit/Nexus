@@ -1,0 +1,107 @@
+services:
+
+  # =========================
+  # HIVE METASTORE DATABASE
+  # =========================
+  postgres-metastore:
+    image: postgres:13
+    container_name: hive-metastore-db
+    environment:
+      POSTGRES_DB: metastore
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+    ports:
+      - "5435:5432"
+
+  # =========================
+  # HIVE METASTORE SERVICE
+  # =========================
+  hive-metastore:
+    image: apache/hive:3.1.3
+    container_name: hive-metastore
+    depends_on:
+      - postgres-metastore
+    environment:
+      SERVICE_NAME: metastore
+      DB_DRIVER: postgres
+      IS_RESUME: "false"
+    ports:
+      - "9083:9083"
+    volumes:
+      - ./hive-conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+      - ./warehouse:/opt/hive/warehouse
+
+  # =========================
+  # SPARK MASTER
+  # =========================
+  spark-master:
+    image: apache/spark:3.5.1
+    container_name: spark-master
+    hostname: spark-master
+    command: >
+      bash -c "
+      /opt/spark/sbin/start-master.sh &&
+      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out
+      "
+    ports:
+      - "8080:8080"   # Spark Master UI
+      - "7077:7077"   # Spark Master port
+    volumes:
+      - ./warehouse:/opt/spark/warehouse
+      - ./apps:/opt/spark-apps
+      - ./spark-ivy:/tmp/.ivy
+
+  # =========================
+  # SPARK WORKER
+  # =========================
+  spark-worker:
+    image: apache/spark:3.5.1
+    container_name: spark-worker
+    hostname: spark-worker
+    command: >
+      bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
+      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out"
+    ports:
+      - "8081:8081"
+      - "4040:4040"
+      - "10000:10000"
+    depends_on:
+      - spark-master
+    volumes:
+      - ./warehouse:/opt/spark/warehouse
+      - ./apps:/opt/spark-apps
+      - ./spark-ivy:/tmp/.ivy
+
+  # =========================
+  # KAFKA (KRaft mode)
+  # =========================
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_EXTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_EXTERNAL://host.docker.internal:29092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+
+  # =========================
+  # KAFKA UI
+  # =========================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
