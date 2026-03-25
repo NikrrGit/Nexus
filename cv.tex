@@ -1,0 +1,150 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=1.1cm,bottom=1.1cm,left=1.15cm,right=1.15cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{lmodern}
+
+\IfFileExists{glyphtounicode.tex}{
+  \input{glyphtounicode}
+  \pdfgentounicode=1
+}{}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{3em}
+\linespread{1.03}\selectfont
+\urlstyle{same}
+
+\definecolor{accent}{RGB}{18,26,36}
+\definecolor{mid}{RGB}{60,60,60}
+
+\setlist[itemize]{
+  leftmargin=1.3em,
+  itemsep=2pt,
+  topsep=3pt,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+\newif\ifshowphoto
+\showphotofalse
+
+\newcommand{\cvsec}[1]{%
+  \vspace{8pt}%
+  {\large\bfseries\color{accent} #1}\par
+  \vspace{3pt}%
+  {\color{accent}\rule{\linewidth}{0.9pt}}\par
+  \vspace{4pt}%
+}
+
+\newcommand{\job}[3]{%
+  {\normalsize\bfseries\color{accent} #1}\hfill{\small\itshape #2}\par
+  {\small\color{mid} #3}\par
+  \vspace{2pt}%
+}
+
+\begin{document}
+
+\begin{minipage}[t]{0.76\linewidth}
+{\LARGE\bfseries\color{accent} Nikhil Rai}\par
+\vspace{2pt}
+{\large\color{mid} Data Engineer}\par
+\vspace{5pt}
+Fichtenweg 25, 72076 T\"{u}bingen \textbar\ +49 152 14017096 \textbar\
+\href{mailto:nikhilrajrai5@hotmail.com}{nikhilrajrai5@hotmail.com}\par
+\href{https://github.com/NikrrGit}{github.com/NikrrGit} \textbar\
+\href{https://linkedin.com/in/nikrrai}{linkedin.com/in/nikrrai}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.18\linewidth}
+\raggedleft
+\ifshowphoto
+  \IfFileExists{photo.jpg}{%
+    \fbox{\includegraphics[width=2.7cm,height=3.2cm,keepaspectratio=false]{photo.jpg}}%
+  }{}
+\fi
+\end{minipage}
+
+\cvsec{Work Experience}
+
+\job{Data Engineer (Working Student)}{12/2025 -- Present}{SkaiPro \textperiodcentered\ T\"{u}bingen, Germany}
+\begin{itemize}
+  \item Engineered automated literature harvesting pipeline collecting \textbf{60,000+} research papers via REST API, cutting acquisition from weeks to \textbf{under 30 minutes}.
+  \item Developed on-premise \textbf{LLM inference pipeline} (Qwen3.5-4B / SGLang) reducing researcher review workload by \textbf{\textasciitilde70\,\%}.
+  \item Designed fault-tolerant batch architecture with checkpointing and retry logic, achieving \textbf{99\,\%+} completion across 40,000 API pages with \textbf{zero data loss}.
+\end{itemize}
+
+\job{AI Research Assistant}{10/2025 -- 03/2026}{Max Planck Institute for Intelligent Systems \textperiodcentered\ T\"{u}bingen}
+\begin{itemize}
+  \item Delivered resumable \textbf{OpenAlex harvesting pipeline} ingesting \textasciitilde15,000 authors \& \textasciitilde42,000 works at a \textbf{99.2\,\%} completion rate.
+  \item Engineered resilient \textbf{PDF pipeline on Kubernetes} with automatic job recovery, reducing data loss to \textbf{0\,\%} and reprocessing by \textbf{40\,\%}.
+  \item Built end-to-end \textbf{embedding pipeline} (pgvector + Gemini) serving sub-second semantic search while reducing infrastructure costs by \textbf{30\,\%}.
+\end{itemize}
+
+\job{Data Analyst}{08/2021 -- 07/2022}{Global Gem Hotels \textperiodcentered\ London, United Kingdom}
+\begin{itemize}
+  \item Built scalable \textbf{ETL pipelines} (Python, PySpark) processing \textbf{50K+ records/week}, driving a \textbf{40\,\%} increase in lead capture.
+  \item Automated \textbf{AWS workflows} (S3, Glue, Lambda), reducing manual processing from 6\,hrs to under 1\,hr at \textbf{99.5\,\%} uptime.
+  \item Developed data-validation automation, cutting QA workload by \textbf{35\,\%}.
+\end{itemize}
+
+\job{Undergraduate Research Assistant}{12/2019 -- 06/2021}{De Montfort University \textperiodcentered\ Leicester, United Kingdom}
+\begin{itemize}
+  \item Implemented \textbf{RESTful APIs} with Django REST Framework for 15+ developers.
+  \item Engineered \textbf{MongoDB} storage solution decreasing query response times by \textbf{300\,ms}.
+\end{itemize}
+
+\cvsec{Selected Projects}
+
+\job{Airflow-ETL NYC Taxi}{07/2025}{Python \textperiodcentered\ Airflow \textperiodcentered\ Docker \textperiodcentered\ BigQuery \textperiodcentered\ GCP \textperiodcentered\ \href{https://github.com/NikrrGit}{github.com/NikrrGit}}
+\begin{itemize}
+  \item Automated ingestion \& transformation for \textbf{3M+ records} on GCP, reducing errors by \textbf{40\,\%} and improving reliability by \textbf{25\,\%} via Airflow orchestration.
+\end{itemize}
+
+\job{DE-Boto3 Project}{04/2025}{Python \textperiodcentered\ AWS \textperiodcentered\ PySpark \textperiodcentered\ MySQL \textperiodcentered\ Boto3 \textperiodcentered\ \href{https://github.com/NikrrGit}{github.com/NikrrGit}}
+\begin{itemize}
+  \item Designed \textbf{AWS S3 + PySpark} ETL pipeline, improving processing speed by \textbf{30\,\%}, reducing latency by \textbf{20\,\%}, and increasing transfer speed by \textbf{40\,\%} via Boto3.
+\end{itemize}
+
+\vfill
+
+\cvsec{Skills}
+{\small
+\textbf{\color{accent}Programming:} Python, SQL, Java\par
+\vspace{2pt}
+\textbf{\color{accent}Data Engineering:} ETL/ELT Pipelines, Data Modelling, Pipeline Orchestration, Data Warehousing, Vector Embeddings\par
+\vspace{2pt}
+\textbf{\color{accent}Frameworks:} PySpark, FastAPI, SQLAlchemy, Pandas, Airflow, Django REST, llama-cpp-python\par
+\vspace{2pt}
+\textbf{\color{accent}Platforms \& Tools:} Kubernetes, Docker, AWS (S3, Glue, Lambda, Boto3), Terraform, Snowflake, Git, Gemini API / SGLang\par
+\vspace{2pt}
+\textbf{\color{accent}Databases:} PostgreSQL, pgvector, MongoDB, GCP BigQuery
+}
+
+\vfill
+
+\cvsec{Education}
+{\small
+\textbf{B.A. Computational Linguistics} \hfill \textit{10/2024 -- Present}\par
+{\color{mid}University of T\"{u}bingen, DE}\par
+\vspace{4pt}
+\textbf{B.Sc. Computer Science} \hfill \textit{10/2018 -- 10/2021}\par
+{\color{mid}De Montfort University, UK}
+}
+
+\vfill
+
+\cvsec{Languages}
+{\small
+English \hfill Native\par
+\vspace{2pt}
+German \hfill A2
+}
+
+\end{document}
