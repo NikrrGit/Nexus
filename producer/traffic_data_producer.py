@@ -10,7 +10,11 @@ fake = Faker()
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:29092",
-    value_serializer=lambda v: json.dumps(v).encode("utf-8")
+    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+    request_timeout_ms=10000,
+    retries=3,
+    retry_backoff_ms=100,
+    connections_max_idle_ms=9000000
 )
 
 roads = ["R100", "R200", "R300", "R400"]
