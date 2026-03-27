@@ -1,0 +1,33 @@
+# Project notes
+PROJECT_NOTES.md
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local data and generated Spark artifacts
+warehouse/
+spark-ivy/
+spark-job.log
+metastore_db/
+
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.key
+.python-version
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
