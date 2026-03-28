@@ -54,7 +54,9 @@ The project follows a streaming Lakehouse architecture from ingestion to analyti
 
 ### Architecture Diagram
 
-![Architecture Diagram](docs/images/architecture-diagram.png)
+![Architecture Diagram](docs/images/live_traffic_analytics_streamlit.svg)
+
+The diagram below shows the end-to-end flow from streaming ingestion to the final dashboard layer.
 
 ### Editable Architecture Source
 
@@ -103,10 +105,17 @@ The dashboard is built with Streamlit and reads directly from the local Gold Del
 
 This is how the dashboard output is shown in the repository on GitHub. GitHub renders these directly from the `docs/images/` folder through normal Markdown image links in this README.
 
+### Overview Dashboard
+
 ![Dashboard Overview](docs/images/dashboard-overview.png)
+
+### Map View
+
 ![Dashboard Map](docs/images/dashboard-map.png)
+
+### Explorer Page
+
 ![Dashboard Explorer](docs/images/dashboard-explorer.png)
-![Dashboard Extra View](docs/images/dashboard-extra.png)
 
 ## Run Locally
 
