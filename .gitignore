@@ -1,5 +1,6 @@
 # Project notes
 PROJECT_NOTES.md
+cv.tex
 
 # Python
 venv/
@@ -19,6 +20,7 @@ metastore_db/
 # Local environment and secrets
 .env
 .env.*
+.streamlit/secrets.toml
 *.pem
 *.key
 .python-version

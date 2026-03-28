@@ -1,0 +1,30 @@
+flowchart LR
+    DS[Real-Time Data Source]
+    K[Kafka]
+
+    subgraph DP[Data Processing]
+        B[Bronze / Raw Data]
+        S[Silver / Cleaned Data]
+        G[Gold / Business Ready]
+    end
+
+    SP[Spark]
+    DL[Delta Lake]
+    HM[Hive Metastore]
+    DB[Dashboard]
+
+    DS --> K
+    K --> B
+    B --> S
+    S --> G
+
+    SP --> B
+    SP --> S
+    SP --> G
+
+    DL --> B
+    DL --> S
+    DL --> G
+
+    G --> HM
+    HM --> DB
