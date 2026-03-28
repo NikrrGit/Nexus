@@ -58,12 +58,6 @@ The project follows a streaming Lakehouse architecture from ingestion to analyti
 
 The diagram below shows the end-to-end flow from streaming ingestion to the final dashboard layer.
 
-### Editable Architecture Source
-
-An editable Mermaid version is also included here:
-
-- `docs/architecture.mmd`
-
 ### Architecture Flow
 
 1. `producer/traffic_data_producer.py` sends simulated traffic events to Kafka.
