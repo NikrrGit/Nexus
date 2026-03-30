@@ -1,6 +1,26 @@
 services:
 
   # =========================
+  # DBT + ELEMENTARY WAREHOUSE (POSTGRES)
+  # =========================
+  postgres-warehouse:
+    image: postgres:16
+    container_name: dbt-warehouse-db
+    environment:
+      POSTGRES_DB: ${DBT_POSTGRES_DB:-warehouse}
+      POSTGRES_USER: ${DBT_POSTGRES_USER:-dbt}
+      POSTGRES_PASSWORD: ${DBT_POSTGRES_PASSWORD:-dbt}
+    ports:
+      - "${DBT_POSTGRES_PORT:-5436}:5432"
+    volumes:
+      - postgres-warehouse-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DBT_POSTGRES_USER:-dbt} -d ${DBT_POSTGRES_DB:-warehouse}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # =========================
   # HIVE METASTORE DATABASE
   # =========================
   postgres-metastore:
@@ -105,3 +125,6 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+volumes:
+  postgres-warehouse-data:

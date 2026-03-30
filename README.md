@@ -119,6 +119,14 @@ This is how the dashboard output is shown in the repository on GitHub. GitHub re
 docker compose up -d
 ```
 
+### dbt + Elementary (Postgres warehouse)
+
+This repo now includes a dedicated Postgres database (separate from the Hive metastore DB) for dbt models and Elementary observability tables.
+
+- **Service**: `postgres-warehouse`
+- **Default port**: `5436` on your machine → `5432` in the container
+- **Connection env vars**: copy `.env.example` to `.env` and adjust as needed.
+
 ### 2. Run Bronze
 
 ```bash
