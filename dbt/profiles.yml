@@ -1,0 +1,12 @@
+traffic_profile:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_POSTGRES_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_POSTGRES_PORT', '5436') | int }}"
+      user: "{{ env_var('DBT_POSTGRES_USER', 'dbt') }}"
+      password: "{{ env_var('DBT_POSTGRES_PASSWORD', 'dbt') }}"
+      dbname: "{{ env_var('DBT_POSTGRES_DB', 'warehouse') }}"
+      schema: analytics
+      threads: 4

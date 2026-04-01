@@ -1,0 +1,13 @@
+name: traffic_analytics
+version: "1.0"
+
+profile: traffic_profile
+
+model-paths: ["models"]
+
+models:
+  traffic_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

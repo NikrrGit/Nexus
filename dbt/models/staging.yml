@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: staging
+    schema: analytics
+    tables:
+      - name: stg_dim_zone
+      - name: stg_dim_road
+      - name: stg_fact_traffic
