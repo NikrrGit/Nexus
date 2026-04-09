@@ -1,0 +1,171 @@
+version: 2
+
+models:
+  - name: dim_locations
+    description: Unique location dimension combining zone and road attributes.
+    meta:
+      gdpr_pii: false
+      data_owner: "data-engineering"
+      sla_freshness_hours: 1
+    columns:
+      - name: location_id
+        description: Deterministic surrogate key derived from city_zone and road_id.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - unique
+          - not_null
+
+      - name: city_zone
+        description: Traffic zone identifier.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["CBD", "AIRPORT", "TECHPARK", "SUBURB", "TRAINSTATION"]
+
+      - name: zone_type
+        description: Classification of the zone (Commercial, IT HUB, Transit Hub, Residential).
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: traffic_risk
+        description: Risk level assigned to the zone.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["HIGH", "MEDIUM", "LOW"]
+
+      - name: road_id
+        description: Road identifier.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["R100", "R200", "R300", "R400"]
+
+      - name: road_type
+        description: Road classification (Highway or City Road).
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: speed_limit
+        description: Posted speed limit for this road.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+  - name: fct_traffic_events
+    description: Fact table of individual traffic events with location foreign key.
+    meta:
+      gdpr_pii: false
+      data_owner: "data-engineering"
+      sla_freshness_hours: 1
+    columns:
+      - name: event_id
+        description: Deterministic surrogate key derived from vehicle_id and event_ts.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - unique
+          - not_null
+
+      - name: location_id
+        description: Foreign key to dim_locations.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_locations')
+              field: location_id
+
+      - name: vehicle_id
+        description: Pseudonymous vehicle identifier.
+        meta:
+          gdpr_pii_classification: true
+        tests:
+          - not_null
+
+      - name: road_id
+        description: Road where the event occurred.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: city_zone
+        description: Zone where the event occurred.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: speed_int
+        description: Recorded vehicle speed as integer.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: congestion_level
+        description: Congestion score (1-5).
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: event_ts
+        description: Timestamp of the traffic event.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: peak_flag
+        description: Whether the event occurred during peak hours (1 = peak, 0 = off-peak).
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: speed_band
+        description: Speed classification bucket.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["LOW", "MEDIUM", "HIGH"]
+
+      - name: hour
+        description: Hour of the event (0-23).
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+
+      - name: weather
+        description: Weather condition at event time.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["CLEAR", "RAIN", "FOG", "STORM"]
+
+      - name: date
+        description: Date of the event.
+        meta:
+          gdpr_pii_classification: false
+        tests:
+          - not_null

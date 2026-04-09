@@ -13,3 +13,5 @@ select
     weather,
     date
 from {{ source('staging', 'stg_fact_traffic') }}
+
+
