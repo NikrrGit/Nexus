@@ -5,9 +5,16 @@ profile: traffic_profile
 
 model-paths: ["models"]
 
+vars:
+  disable_samples_on_pii_tags: true
+  pii_tags: ["gdpr_pii_classification"]
+
 models:
   traffic_analytics:
     staging:
       +materialized: view
     marts:
       +materialized: table
+
+  elementary:
+    +schema: "elementary"

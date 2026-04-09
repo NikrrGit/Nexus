@@ -17,6 +17,12 @@ spark-ivy/
 spark-job.log
 metastore_db/
 
+# dbt + Elementary
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+edr_target/
+
 # Local environment and secrets
 .env
 .env.*
