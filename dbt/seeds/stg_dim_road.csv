@@ -1,0 +1,5 @@
+road_id,road_type,speed_limit
+R100,Highway,100
+R200,Highway,100
+R300,City Road,60
+R400,City Road,60

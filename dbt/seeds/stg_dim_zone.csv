@@ -1,0 +1,6 @@
+city_zone,zone_type,traffic_risk
+CBD,Commercial,HIGH
+AIRPORT,TRANSIT HUB,HIGH
+TECHPARK,IT HUB,MEDIUM
+SUBURB,Residential,LOW
+TRAINSTATION,TRANSIT HUB,LOW
