@@ -1,16 +1,19 @@
-from pathlib import Path
+import os
 
 import pandas as pd
 import pydeck as pdk
+import psycopg2
 import streamlit as st
-from deltalake import DeltaTable
 
 
-ROOT_DIR = Path(__file__).resolve().parents[1]
-WAREHOUSE_DIR = ROOT_DIR / "warehouse"
-FACT_TRAFFIC_PATH = WAREHOUSE_DIR / "fact_traffic"
-DIM_ZONE_PATH = WAREHOUSE_DIR / "dim_zone"
-DIM_ROAD_PATH = WAREHOUSE_DIR / "dim_road"
+def _pg_conn():
+    return psycopg2.connect(
+        host=os.getenv("DBT_POSTGRES_HOST", "localhost"),
+        port=int(os.getenv("DBT_POSTGRES_PORT", "5436")),
+        dbname=os.getenv("DBT_POSTGRES_DB", "warehouse"),
+        user=os.getenv("DBT_POSTGRES_USER", "dbt"),
+        password=os.getenv("DBT_POSTGRES_PASSWORD", "dbt"),
+    )
 
 ZONE_COORDS = {
     "CBD": {"lat": 51.5076, "lon": -0.1278},
@@ -91,15 +94,19 @@ def metric_card(label: str, value: str, delta: str) -> None:
 
 
 @st.cache_data(show_spinner=False)
-def load_delta_table(path: Path) -> pd.DataFrame:
-    return DeltaTable(str(path)).to_pandas()
+def load_postgres_table(query: str) -> pd.DataFrame:
+    conn = _pg_conn()
+    try:
+        return pd.read_sql(query, conn)
+    finally:
+        conn.close()
 
 
 @st.cache_data(show_spinner=False)
 def load_dashboard_data() -> pd.DataFrame:
-    fact_df = load_delta_table(FACT_TRAFFIC_PATH)
-    zone_df = load_delta_table(DIM_ZONE_PATH)
-    road_df = load_delta_table(DIM_ROAD_PATH)
+    fact_df = load_postgres_table("SELECT * FROM analytics.fact_traffic")
+    zone_df = load_postgres_table("SELECT * FROM analytics.dim_zone")
+    road_df = load_postgres_table("SELECT * FROM analytics.dim_road")
     coords_df = pd.DataFrame(
         [{"city_zone": zone, **coords} for zone, coords in ZONE_COORDS.items()]
     )
@@ -123,16 +130,14 @@ def load_dashboard_data() -> pd.DataFrame:
 
 
 def ensure_gold_tables() -> None:
-    missing_paths = [
-        str(path.relative_to(ROOT_DIR))
-        for path in [FACT_TRAFFIC_PATH, DIM_ZONE_PATH, DIM_ROAD_PATH]
-        if not path.exists()
-    ]
-
-    if missing_paths:
+    try:
+        conn = _pg_conn()
+        conn.close()
+    except Exception as exc:
         st.error(
-            "Gold data is missing. Run the gold layer first.\n\nMissing paths:\n- "
-            + "\n- ".join(missing_paths)
+            "Cannot connect to the warehouse database. "
+            "Make sure docker compose is running and dbt has been executed.\n\n"
+            f"Error: {exc}"
         )
         st.stop()
 
@@ -140,7 +145,7 @@ def ensure_gold_tables() -> None:
 def render_sidebar_filters(data: pd.DataFrame) -> pd.DataFrame:
     st.sidebar.header("Control Room")
 
-    if st.sidebar.button("Refresh Delta Data", use_container_width=True):
+    if st.sidebar.button("Refresh Data", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
 

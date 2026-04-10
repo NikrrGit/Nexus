@@ -1,5 +1,6 @@
 streamlit
 plotly
 pandas
-deltalake
+psycopg2-binary
+sqlalchemy
 pyarrow
