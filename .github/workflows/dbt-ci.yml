@@ -1,0 +1,71 @@
+name: dbt CI
+
+on:
+  pull_request:
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dbt
+          POSTGRES_PASSWORD: dbt
+          POSTGRES_DB: warehouse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U dbt -d warehouse"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+      DBT_POSTGRES_HOST: localhost
+      DBT_POSTGRES_PORT: 5432
+      DBT_POSTGRES_DB: warehouse
+      DBT_POSTGRES_USER: dbt
+      DBT_POSTGRES_PASSWORD: dbt
+
+    defaults:
+      run:
+        working-directory: dbt
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install dbt-postgres elementary-data
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Seed fixture data
+        run: dbt seed
+
+      - name: Build Elementary models
+        run: dbt run --select elementary
+
+      - name: Run dbt models
+        run: dbt run
+
+      - name: Run dbt tests
+        run: dbt test
+
+      - name: Generate Elementary report
+        run: edr report --file-path ../edr_target/report.html --project-dir .
+
+      - name: Upload Elementary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: elementary-report
+          path: edr_target/report.html
