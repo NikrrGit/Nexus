@@ -20,7 +20,7 @@ metastore_db/
 # dbt + Elementary
 dbt/target/
 dbt/dbt_packages/
-dbt/lodbt/.user.yml
+dbt/.user.yml
 dbt/package-lock.yml
 edr_target/
 
