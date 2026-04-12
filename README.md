@@ -75,7 +75,63 @@ The project follows a streaming Lakehouse architecture from ingestion to a teste
 
 ### Architecture Diagram
 
-![Architecture Diagram](docs/images/architecture.svg)
+```mermaid
+flowchart LR
+    subgraph INGESTION["Ingestion"]
+        P["Producer\nPython + Faker"] --> K["Kafka\nKRaft mode"]
+    end
+
+    subgraph LAKEHOUSE["Lakehouse · Medallion Architecture"]
+        direction LR
+        B["Bronze\nRaw ingestion"] --> S["Silver\nValidation · Dedup\nFeature engineering"]
+        S --> G["Gold\nStar schema\ndim + fact tables"]
+    end
+
+    subgraph WAREHOUSE["Warehouse"]
+        direction TB
+        PG["PostgreSQL 16\nStaging tables"]
+        DBT["dbt Core\ndim_locations\nfct_traffic_events\n28 tests · GDPR tags"]
+        EL["Elementary\nObservability\nHTML reports"]
+        PG --> DBT
+        DBT --> EL
+    end
+
+    subgraph SERVING["Serving"]
+        ST["Streamlit Dashboard\nKPIs · Maps · Charts\nPlotly · PyDeck"]
+    end
+
+    subgraph CICD["CI / CD & Infrastructure"]
+        direction LR
+        GHA["GitHub Actions"]
+        TF["Terraform"]
+        AWS["AWS S3 + IAM\nOIDC"]
+    end
+
+    K --> B
+    G -->|"Loader\nDelta → Postgres"| PG
+    DBT --> ST
+
+    style INGESTION fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    style LAKEHOUSE fill:#eff6ff,stroke:#93c5fd,color:#1e40af
+    style WAREHOUSE fill:#ecfdf5,stroke:#34d399,color:#065f46
+    style SERVING fill:#fef2f2,stroke:#ef4444,color:#991b1b
+    style CICD fill:#f0f9ff,stroke:#38bdf8,color:#0c4a6e
+
+    style P fill:#fef9c3,stroke:#ca8a04,color:#854d0e
+    style K fill:#f3e8ff,stroke:#a78bfa,color:#5b21b6
+    style B fill:#fef9c3,stroke:#ca8a04,color:#854d0e
+    style S fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style G fill:#fef3c7,stroke:#d97706,color:#92400e
+    style PG fill:#ecfdf5,stroke:#34d399,color:#065f46
+    style DBT fill:#fff1f2,stroke:#f43f5e,color:#9f1239
+    style EL fill:#f0f9ff,stroke:#38bdf8,color:#0c4a6e
+    style ST fill:#fef2f2,stroke:#ef4444,color:#991b1b
+    style GHA fill:#dbeafe,stroke:#93c5fd,color:#1e40af
+    style TF fill:#dbeafe,stroke:#93c5fd,color:#1e40af
+    style AWS fill:#dbeafe,stroke:#93c5fd,color:#1e40af
+```
+
+**Infrastructure:** Docker Compose — Spark Master + 2 Workers (4 cores / 4 GB each) · Kafka (KRaft) · Hive Metastore · PostgreSQL x2 · Kafka UI
 
 ### Architecture Flow
 
