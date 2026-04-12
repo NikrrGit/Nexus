@@ -60,13 +60,13 @@ dbt/                          dbt project: models, tests, seeds, Elementary
   seeds/                      CI fixture data for automated testing
   packages.yml                Elementary dbt package
 infra/terraform/              Terraform: S3 bucket + IAM OIDC for GitHub Actions
-scripts/                      Loader and Elementary report scripts
+scripts/                      Pipeline runner, loader, and Elementary report scripts
 .github/workflows/            CI: dbt-ci.yml and terraform-plan.yml
 docs/images/                  Screenshots used in the GitHub README
 hive-conf/                    Hive metastore configuration
 producer/                     Kafka traffic producer
 sql/                          SQL setup scripts
-docker-compose.yaml           Local infrastructure: Spark, Kafka, Hive, Postgres
+docker-compose.yaml           Local infrastructure: Spark (2 workers), Kafka, Hive, Postgres x2
 ```
 
 ## Architecture
@@ -75,7 +75,7 @@ The project follows a streaming Lakehouse architecture from ingestion to a teste
 
 ### Architecture Diagram
 
-![Architecture Diagram](docs/images/live_traffic_analytics_streamlit.svg)
+![Architecture Diagram](docs/images/architecture.svg)
 
 ### Architecture Flow
 
@@ -155,71 +155,95 @@ The dashboard is built with Streamlit and reads from the dbt warehouse tables in
 
 ## Run Locally
 
-### 1. Start infrastructure
+### Quick start (single command)
+
+```bash
+docker compose up -d
+CLEAN=1 ./scripts/run_pipeline.sh
+```
+
+This runs the full pipeline end to end: producer, Bronze, Silver, Gold, Delta-to-Postgres loader, dbt build + test, and launches the Streamlit dashboard at `http://localhost:8501`.
+
+The script automatically polls each streaming layer for committed data and kills it before moving to the next step.
+
+### Step-by-step (manual)
+
+<details>
+<summary>Click to expand individual steps</summary>
+
+**1. Start infrastructure**
 
 ```bash
 docker compose up -d
 ```
 
-This starts Kafka, Spark (master + worker), Hive metastore, and two Postgres databases (one for Hive, one for the dbt warehouse).
+This starts Kafka (KRaft), Spark (master + 2 workers at 4 cores / 4 GB each), Hive metastore, Kafka UI, and two Postgres databases (Hive metadata + dbt warehouse).
 
-### 2. Run Bronze
+**2. Start Bronze stream, then produce data**
 
 ```bash
+# Terminal 1 — start Bronze (reads "latest" from Kafka, so start this first)
 docker exec spark-master /opt/spark/bin/spark-submit \
   --master spark://spark-master:7077 \
-  --jars /tmp/.ivy/jars/io.delta_delta-spark_2.12-3.2.0.jar,/tmp/.ivy/jars/io.delta_delta-storage-3.2.0.jar,/tmp/.ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar,/tmp/.ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar,/tmp/.ivy/jars/org.apache.kafka_kafka-clients-3.4.1.jar,/tmp/.ivy/jars/org.apache.commons_commons-pool2-2.11.1.jar,/tmp/.ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar,/tmp/.ivy/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar,/tmp/.ivy/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar \
+  --packages io.delta:delta-spark_2.12:3.2.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 \
+  --conf spark.jars.ivy=/tmp/.ivy \
+  --conf spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension \
+  --conf spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog \
   /opt/spark-apps/traffic_bronze.py
+
+# Terminal 2 — produce events (Ctrl+C to stop after ~30s)
+python producer/traffic_data_producer.py
 ```
 
-### 3. Produce data
+Kill the Bronze stream once `warehouse/traffic_bronze/_delta_log/` appears.
 
-```bash
-./venv/bin/python producer/traffic_data_producer.py
-```
-
-### 4. Run Silver
+**3. Run Silver**
 
 ```bash
 docker exec spark-master /opt/spark/bin/spark-submit \
   --master spark://spark-master:7077 \
-  --jars /tmp/.ivy/jars/io.delta_delta-spark_2.12-3.2.0.jar,/tmp/.ivy/jars/io.delta_delta-storage-3.2.0.jar \
+  --packages io.delta:delta-spark_2.12:3.2.0 \
+  --conf spark.jars.ivy=/tmp/.ivy \
+  --conf spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension \
+  --conf spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog \
   /opt/spark-apps/traffic_silver.py
 ```
 
-### 5. Run Gold
+Kill once `warehouse/traffic_silver/_delta_log/` appears.
+
+**4. Run Gold (auto-terminates)**
 
 ```bash
 docker exec spark-master /opt/spark/bin/spark-submit \
   --master spark://spark-master:7077 \
-  --jars /tmp/.ivy/jars/io.delta_delta-spark_2.12-3.2.0.jar,/tmp/.ivy/jars/io.delta_delta-storage-3.2.0.jar \
+  --packages io.delta:delta-spark_2.12:3.2.0 \
+  --conf spark.jars.ivy=/tmp/.ivy \
+  --conf spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension \
+  --conf spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog \
   /opt/spark-apps/traffic_gold.py
 ```
 
-### 6. Load Gold into Postgres
+**5. Load Gold into Postgres**
 
 ```bash
 python scripts/load_gold_delta_to_psql.py
 ```
 
-### 7. Run dbt
+**6. Run dbt**
 
 ```bash
-cd dbt
-pip install dbt-postgres elementary-data
-dbt deps
-dbt run
-dbt test
+cd dbt && dbt deps && dbt run && dbt test
 ```
 
-### 8. Run dashboard
+**7. Run dashboard**
 
 ```bash
-pip install -r requirements-dashboard.txt
 streamlit run dashboard/app.py
 ```
 
 Open `http://localhost:8501`.
+
+</details>
 
 ### Optional: Generate Elementary report
 
@@ -275,23 +299,22 @@ Postgres (dbt warehouse):
 
 ## Tech Stack
 
-- Apache Kafka
-- Apache Spark 3.5
-- Delta Lake
-- Hive Metastore
-- PostgreSQL
-- dbt Core
-- Elementary (data observability)
-- Terraform
-- GitHub Actions
-- Python
-- SQL
-- Streamlit
-- Plotly
-- Docker Compose
+| Layer | Technology |
+|-------|-----------|
+| Ingestion | Apache Kafka (KRaft mode), Python + Faker |
+| Stream Processing | Apache Spark 3.5.1 Structured Streaming (1 master, 2 workers — 4c/4g each) |
+| Storage | Delta Lake 3.2, Hive Metastore |
+| Warehouse | PostgreSQL 16, dbt Core |
+| Data Quality | dbt tests (28 total), GDPR PII meta tags |
+| Observability | Elementary |
+| Infrastructure | Terraform (AWS S3 + IAM OIDC) |
+| CI/CD | GitHub Actions |
+| Dashboard | Streamlit, Plotly, PyDeck |
+| Orchestration | Docker Compose |
+| Languages | Python, SQL |
 
 ## Notes
 
 - Generated data in `warehouse/` is intentionally ignored from Git.
 - Connection env vars for the dbt Postgres are documented in `.env.example`.
-- Run the full pipeline (Bronze through dbt) before opening the dashboard.
+- Run the full pipeline before opening the dashboard: `CLEAN=1 ./scripts/run_pipeline.sh`

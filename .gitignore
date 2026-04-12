@@ -46,3 +46,4 @@ infra/terraform/.terraform.lock.hcl
 .idea/
 *.swp
 *.swo
+.cursor/

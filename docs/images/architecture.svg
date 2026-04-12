@@ -1,0 +1,187 @@
+<svg viewBox="0 0 960 580" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="580" rx="12" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="480" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Nexus  Streaming Lakehouse Architecture</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- CI/CD & IaC bar (top) -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <rect x="20" y="48" width="920" height="52" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="40" y="80" font-size="11" font-weight="600" fill="#1e40af">CI / CD &amp; Infrastructure</text>
+  <rect x="220" y="60" width="140" height="30" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="290" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GitHub Actions</text>
+  <rect x="380" y="60" width="120" height="30" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="440" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Terraform</text>
+  <rect x="520" y="60" width="120" height="30" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="580" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">AWS S3 + IAM</text>
+  <rect x="660" y="60" width="120" height="30" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="720" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Elementary</text>
+  <rect x="800" y="60" width="120" height="30" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="860" y="80" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GDPR Meta Tags</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- INGESTION -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- Producer -->
+  <rect x="30" y="130" width="115" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="87" y="162" text-anchor="middle" font-size="12" font-weight="700" fill="#92400e">Producer</text>
+  <text x="87" y="178" text-anchor="middle" font-size="10" fill="#a16207">Python + Faker</text>
+  <text x="87" y="192" text-anchor="middle" font-size="9" fill="#b45309">Simulated traffic</text>
+
+  <!-- Arrow -->
+  <line x1="145" y1="170" x2="168" y2="170" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Kafka -->
+  <rect x="170" y="125" width="110" height="90" rx="8" fill="#f3e8ff" stroke="#a78bfa" stroke-width="1"/>
+  <text x="225" y="158" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">Kafka</text>
+  <text x="225" y="175" text-anchor="middle" font-size="10" fill="#7c3aed">KRaft mode</text>
+  <text x="225" y="190" text-anchor="middle" font-size="9" fill="#8b5cf6">traffic-topic</text>
+  <text x="225" y="203" text-anchor="middle" font-size="9" fill="#8b5cf6">+ Kafka UI :8090</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- LAKEHOUSE PROCESSING  Medallion Layers -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <rect x="300" y="115" width="335" height="180" rx="10" fill="none" stroke="#d1d5db" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="467" y="284" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af">Spark Structured Streaming + Delta Lake</text>
+
+  <!-- Arrow Kafka ’ Bronze -->
+  <line x1="280" y1="170" x2="312" y2="170" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Bronze -->
+  <rect x="314" y="135" width="95" height="72" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1"/>
+  <text x="361" y="162" text-anchor="middle" font-size="12" font-weight="700" fill="#854d0e">Bronze</text>
+  <text x="361" y="178" text-anchor="middle" font-size="9" fill="#a16207">Raw ingestion</text>
+  <text x="361" y="192" text-anchor="middle" font-size="9" fill="#a16207">Kafka ’ Delta</text>
+
+  <!-- Arrow -->
+  <line x1="409" y1="170" x2="425" y2="170" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Silver -->
+  <rect x="427" y="135" width="95" height="72" rx="7" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="474" y="162" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">Silver</text>
+  <text x="474" y="178" text-anchor="middle" font-size="9" fill="#4f46e5">Validation, dedup</text>
+  <text x="474" y="192" text-anchor="middle" font-size="9" fill="#4f46e5">Feature engineering</text>
+
+  <!-- Arrow -->
+  <line x1="522" y1="170" x2="538" y2="170" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Gold -->
+  <rect x="540" y="135" width="85" height="72" rx="7" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+  <text x="582" y="162" text-anchor="middle" font-size="12" font-weight="700" fill="#92400e">Gold</text>
+  <text x="582" y="178" text-anchor="middle" font-size="9" fill="#b45309">Star schema</text>
+  <text x="582" y="192" text-anchor="middle" font-size="9" fill="#b45309">dim + fact tables</text>
+
+  <!-- Spark label -->
+  <rect x="324" y="218" width="196" height="26" rx="5" fill="#fff7ed" stroke="#fb923c" stroke-width="0.8"/>
+  <text x="422" y="236" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">Apache Spark 3.5  ·  Delta Lake</text>
+
+  <!-- Hive label -->
+  <rect x="324" y="248" width="196" height="24" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="0.8"/>
+  <text x="422" y="264" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">Hive Metastore  ·  PostgreSQL 13</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- WAREHOUSE -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- Arrow Gold ’ Loader -->
+  <line x1="625" y1="170" x2="648" y2="170" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Loader -->
+  <rect x="650" y="140" width="80" height="60" rx="7" fill="#fdf2f8" stroke="#ec4899" stroke-width="1"/>
+  <text x="690" y="164" text-anchor="middle" font-size="11" font-weight="700" fill="#9d174d">Loader</text>
+  <text x="690" y="180" text-anchor="middle" font-size="9" fill="#be185d">Delta ’ Postgres</text>
+  <text x="690" y="192" text-anchor="middle" font-size="9" fill="#be185d">Python script</text>
+
+  <!-- Arrow Loader ’ Postgres -->
+  <line x1="690" y1="200" x2="690" y2="225" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- PostgreSQL -->
+  <rect x="640" y="228" width="100" height="72" rx="8" fill="#ecfdf5" stroke="#34d399" stroke-width="1"/>
+  <text x="690" y="254" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">PostgreSQL 16</text>
+  <text x="690" y="270" text-anchor="middle" font-size="9" fill="#047857">Staging tables</text>
+  <text x="690" y="284" text-anchor="middle" font-size="9" fill="#047857">analytics schema</text>
+
+  <!-- Arrow Postgres ’ dbt -->
+  <line x1="690" y1="300" x2="690" y2="325" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- dbt -->
+  <rect x="635" y="328" width="110" height="80" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="1"/>
+  <text x="690" y="354" text-anchor="middle" font-size="13" font-weight="700" fill="#9f1239">dbt Core</text>
+  <text x="690" y="372" text-anchor="middle" font-size="9" fill="#be123c">dim_locations</text>
+  <text x="690" y="384" text-anchor="middle" font-size="9" fill="#be123c">fct_traffic_events</text>
+  <text x="690" y="396" text-anchor="middle" font-size="9" fill="#be123c">28 tests · GDPR tags</text>
+
+  <!-- Arrow dbt ’ Elementary -->
+  <line x1="745" y1="368" x2="770" y2="368" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Elementary -->
+  <rect x="772" y="340" width="110" height="56" rx="7" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1"/>
+  <text x="827" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e">Elementary</text>
+  <text x="827" y="378" text-anchor="middle" font-size="9" fill="#0369a1">Observability</text>
+  <text x="827" y="390" text-anchor="middle" font-size="9" fill="#0369a1">HTML reports</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- SERVING -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- Arrow dbt ’ Dashboard -->
+  <line x1="690" y1="408" x2="690" y2="435" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- Streamlit Dashboard -->
+  <rect x="620" y="438" width="140" height="80" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.2"/>
+  <text x="690" y="466" text-anchor="middle" font-size="13" font-weight="700" fill="#991b1b">Streamlit</text>
+  <text x="690" y="484" text-anchor="middle" font-size="10" fill="#b91c1c">Dashboard</text>
+  <text x="690" y="498" text-anchor="middle" font-size="9" fill="#dc2626">KPIs · Maps · Charts</text>
+  <text x="690" y="510" text-anchor="middle" font-size="9" fill="#dc2626">Plotly · PyDeck</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- DOCKER COMPOSE bar (bottom) -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <rect x="20" y="540" width="920" height="32" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8"/>
+  <text x="480" y="561" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">Docker Compose  ·  Kafka (KRaft)  ·  Spark Master + 2 Workers (4c/4g each)  ·  Hive  ·  PostgreSQL x2  ·  Kafka UI</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- FLOW LABELS -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- Vertical label: Ingestion -->
+  <text x="155" y="120" text-anchor="middle" font-size="9" font-weight="700" fill="#6b7280" letter-spacing="1">INGESTION</text>
+
+  <!-- Vertical label: Lakehouse -->
+  <text x="467" y="125" text-anchor="middle" font-size="9" font-weight="700" fill="#6b7280" letter-spacing="1">LAKEHOUSE  ·  MEDALLION ARCHITECTURE</text>
+
+  <!-- Vertical label: Warehouse -->
+  <text x="690" y="125" text-anchor="middle" font-size="9" font-weight="700" fill="#6b7280" letter-spacing="1">WAREHOUSE</text>
+
+  <!-- Vertical label: Serving -->
+  <text x="690" y="432" text-anchor="middle" font-size="9" font-weight="700" fill="#6b7280" letter-spacing="1">SERVING</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- SPARK CLUSTER detail box -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <rect x="30" y="320" width="230" height="120" rx="8" fill="#fff7ed" stroke="#fdba74" stroke-width="1"/>
+  <text x="145" y="345" text-anchor="middle" font-size="11" font-weight="700" fill="#9a3412">Spark Cluster</text>
+  <text x="145" y="365" text-anchor="middle" font-size="10" fill="#c2410c">1 Master  ·  2 Workers</text>
+  <text x="145" y="382" text-anchor="middle" font-size="10" fill="#c2410c">4 cores / 4 GB per worker</text>
+  <text x="145" y="399" text-anchor="middle" font-size="10" fill="#c2410c">8 cores / 8 GB total</text>
+  <text x="145" y="418" text-anchor="middle" font-size="9" fill="#ea580c">Spark 3.5.1  ·  Delta Spark 3.2.0</text>
+  <text x="145" y="432" text-anchor="middle" font-size="9" fill="#ea580c">Structured Streaming</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- TECH STACK legend -->
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <rect x="30" y="460" width="230" height="68" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="145" y="480" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Tech Stack</text>
+  <text x="145" y="496" text-anchor="middle" font-size="9" fill="#64748b">Kafka · Spark · Delta Lake · Hive · PostgreSQL</text>
+  <text x="145" y="509" text-anchor="middle" font-size="9" fill="#64748b">dbt Core · Elementary · Terraform · GitHub Actions</text>
+  <text x="145" y="522" text-anchor="middle" font-size="9" fill="#64748b">Streamlit · Plotly · Python · SQL · Docker Compose</text>
+</svg>
