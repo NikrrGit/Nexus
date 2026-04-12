@@ -20,7 +20,8 @@ metastore_db/
 # dbt + Elementary
 dbt/target/
 dbt/dbt_packages/
-dbt/logs/
+dbt/lodbt/.user.yml
+dbt/package-lock.yml
 edr_target/
 
 # Terraform
