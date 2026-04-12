@@ -23,6 +23,12 @@ dbt/dbt_packages/
 dbt/logs/
 edr_target/
 
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.backup
+infra/terraform/.terraform.lock.hcl
+
 # Local environment and secrets
 .env
 .env.*
